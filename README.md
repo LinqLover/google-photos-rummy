@@ -76,8 +76,11 @@ Just install & run the script, print out the photos, and reminisce together!
    **Tip:** Turn the papers over during cutting to avoid self-spoilering!
    
    For instance, on Windows, you can do this by selecting and right-clicking the downloaded files in the explorer, choosing "Print", and choosing an appropriate page layout on the right:
-   
-   ![image](https://user-images.githubusercontent.com/38782922/147887994-e7182573-9eb4-4f37-acd7-2ee0779fbc85.png)
+
+   <p float="center">
+     <img src="https://user-images.githubusercontent.com/38782922/147887994-e7182573-9eb4-4f37-acd7-2ee0779fbc85.png" width="45%" />
+     <img src="https://user-images.githubusercontent.com/38782922/147888018-de8073a7-7b5b-41dd-aa67-3926d1b5ac14.png" width="45%" /> 
+  </p>
 
 6. Mix the printed photos and put them face down in a pile.
 
