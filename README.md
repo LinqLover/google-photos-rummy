@@ -13,10 +13,10 @@ duration: 30 - 90 min
 Every year you take hundreds or even thousands of beautiful and funny photos that are linked to wonderful memories.
 While you can preserve all of these photos in your personal [Google Photos gallery](https://photos.google.com/) for (almost) ever, keeping these memories actually alive is harder if you do not talk about them with your friends and family.
 
-At New Year's Eve, you usually sit together with (some of) your friends or family members, but the tempation is great to waste your time by drinking too much or watching a political end-of-the-year review in TV only (or, if you live in Germany, most likely [Dinner for One](https://www.youtube.com/watch?v=UmsKkebN2O4)).
+On New Year's Eve, you usually sit together with (some of) your friends or family members, but the temptation is great to waste your time by drinking too much or watching a political end-of-the-year review on TV only (or if you live in Germany, most likely [Dinner for One](https://www.youtube.com/watch?v=UmsKkebN2O4)).
 
-Why not create your very own end-of-the-year review instead and revive the memories to your most wonderful moments together?
-And because just watching photos in a group very quickly gets boring, why not make it a funny party game?
+Why not create your very own end-of-the-year review instead and revive the memories of your most wonderful moments together?
+And because just watching photos in a group very quickly gets boring, why not make it a fun party game?
 *Google Photos Rummy* (not by Google) is a small card game inspired by [Rummy](https://en.wikipedia.org/wiki/Rummy) and [Rummikub](https://en.wikipedia.org/wiki/Rummikub) that allows you to do right this!
 
 The script from this repository will scrape all photos from your Google Photos Gallery for one year, select a random subset from them, and download it.
@@ -64,7 +64,7 @@ Just install & run the script, print out the photos, and reminisce together!
    python3 google_photos_rummy.py
    ```
 
-   Recommended sample size is ~50, depending on the number of memories, players, and the available time.
+   The recommended sample size is ~50, depending on the number of memories, players, and available time.
 
    The script will ask you to perform a few simple steps for authorization.
    Do as instructed.
@@ -74,12 +74,12 @@ Just install & run the script, print out the photos, and reminisce together!
 5. Print out the downloaded photos (recommended size: 4 images per page) and cut up the pages.
 
    **Tip:** Turn the papers over during cutting to avoid self-spoilering!
-   
+
    For instance, on Windows, you can do this by selecting and right-clicking the downloaded files in the explorer, choosing "Print", and choosing an appropriate page layout on the right:
 
    <p float="center">
      <img src="https://user-images.githubusercontent.com/38782922/147887994-e7182573-9eb4-4f37-acd7-2ee0779fbc85.png" width="45%" />
-     <img src="https://user-images.githubusercontent.com/38782922/147888018-de8073a7-7b5b-41dd-aa67-3926d1b5ac14.png" width="45%" /> 
+     <img src="https://user-images.githubusercontent.com/38782922/147888018-de8073a7-7b5b-41dd-aa67-3926d1b5ac14.png" width="45%" />
   </p>
 
 6. Mix the printed photos and put them face down in a pile.
@@ -89,7 +89,7 @@ Just install & run the script, print out the photos, and reminisce together!
 If you have ever played [Rummikub](https://en.wikipedia.org/wiki/Rummikub) before, the following will sound familiar to you:
 Every player picks up a few photo cards (recommendation: 5 cards) initially.
 The players try in turn to lay out a group of at least three cards that must have a connecting element (e.g., a certain place, activity, or event).
-Whenever a card is laid out, the players try to remember where the photo was taken and what they did enjoy most at this day.
+Whenever a card is laid out, the players try to remember where the photo was taken and what they did enjoy most on this day.
 Be prepared for discussing valid connecting elements during the game, and beware of not allowing for too generic categories!
 
 If the player in turn cannot lay out a group, this player picks up another card instead.
@@ -100,9 +100,9 @@ They can now modify the existing arrangements by appending cards to existing or 
 - The player must not pick up a card again that has been laid out in an earlier turn.
 
 If a player has laid out all cards in their hand, this player wins.
-However, the game may be continued at will so you that you do not miss any memory.
+However, the game may be continued at will so that you do not miss any memory.
 
-**Goal of the game** is it to revive as many beautiful moments as possible, not being the first one to win, so don't you dare to plan any tactical maneuvers!
+**Goal of the game** is to revive as many beautiful moments as possible, not being the first one to win, so don't you dare to plan any tactical maneuvers!
 
 ## Addendum
 
@@ -111,4 +111,4 @@ I tried this out once in a group with 5 people and it worked pretty well, but th
 See also the [issues](https://github.com/LinqLover/google-photos-rummy/issues) page for more ideas.
 Any feedback and pull requests will be welcome!
 
-Have a nice eveneing, a happy new year, and be sure to enjoy your life.
+Have a nice evening, a happy new year, and be sure to enjoy your life.
