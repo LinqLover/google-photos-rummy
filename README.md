@@ -74,6 +74,10 @@ Just install & run the script, print out the photos, and reminisce together!
 5. Print out the downloaded photos (recommended size: 4 images per page) and cut up the pages.
 
    **Tip:** Turn the papers over during cutting to avoid self-spoilering!
+   
+   For instance, on Windows, you can do this by selecting and right-clicking the downloaded files in the explorer, choosing "Print", and choosing an appropriate page layout on the right:
+   
+   ![image](https://user-images.githubusercontent.com/38782922/147887994-e7182573-9eb4-4f37-acd7-2ee0779fbc85.png)
 
 6. Mix the printed photos and put them face down in a pile.
 
