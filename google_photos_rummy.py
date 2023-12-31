@@ -14,6 +14,10 @@ def main(
     max_height=2268,
     output_dir='photos'
 ):
+    """
+    pre: 1900 <= year < 3000 and sample_size > 0 and max_width > 0 and max_height > 0 and len(output_dir) > 0
+    post: True
+    """
     min_date = dt.datetime(year=year, month=1, day=1)
     max_date = dt.datetime(year=year + 1, month=1, day=1)
 
