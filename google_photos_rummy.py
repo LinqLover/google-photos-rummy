@@ -8,6 +8,7 @@ import random
 import requests
 from tqdm import tqdm
 
+
 def main(
     year,
     sample_size,
@@ -22,17 +23,26 @@ def main(
     min_date = dt.datetime(year=year, month=1, day=1)
     max_date = dt.datetime(year=year + 1, month=1, day=1)
 
-    credentials = authenticate()
-
-    pictures = get_pictures(credentials, min_date, max_date)
+    pictures = []
+    number_of_accounts = 0
+    # FIXME: requesting multiple accounts upfront is not working - new credentials appear to overwrite old ones
+    while True:
+        print(f"Google Photos Account{'' if not number_of_accounts else f' {len(number_of_accounts) + 1}'}:")
+        credentials = authenticate()
+        pictures += [
+            {**picture, 'credentials': {'token': credentials.token}}
+            for picture in get_pictures(credentials, min_date, max_date)
+        ]
+        if input("Add another account? (y/n): ") != 'y':
+            break
+        number_of_accounts += 1
     print(f"Fetched {len(pictures)} candidates")
 
     random_pictures = select_random_pictures(pictures, sample_size)
     print(f"Selected {len(random_pictures)} random photos")
 
-    download_count = download_pictures(credentials, random_pictures, max_width, max_height, output_dir)
+    download_count = download_pictures(random_pictures, max_width, max_height, output_dir)
     print(f"Downloaded {download_count} photos to {output_dir}!")
-
 
 def authenticate():
     flow = google_auth_oauthlib.flow.InstalledAppFlow.from_client_secrets_file(
@@ -40,7 +50,6 @@ def authenticate():
         scopes=['https://www.googleapis.com/auth/photoslibrary.readonly'])
 
     return flow.run_console()
-
 
 def get_pictures(credentials, min_date, max_date):
     url = 'https://photoslibrary.googleapis.com/v1/mediaItems'
@@ -107,16 +116,17 @@ def select_random_pictures(pictures, sample_size):
         ]
     )
 
-def download_pictures(credentials, pictures, max_width, max_height, output_dir):
+def download_pictures(pictures, max_width, max_height, output_dir):
     Path(output_dir).mkdir(parents=True, exist_ok=True)
     download_count = 0
     for picture in tqdm(pictures, desc="Downloading"):
         url = f"https://photoslibrary.googleapis.com/v1/mediaItems/{picture['id']}"
-        resp = requests.get(url, headers={'Authorization': 'Bearer ' + credentials.token})
+        credentials = picture['credentials']
+        resp = requests.get(url, headers={'Authorization': 'Bearer ' + credentials['token']})
         try:
             filename = resp.json()['filename']
             file_url = resp.json()['baseUrl'] + f'=w{max_width}-h{max_height}'
-            resp = requests.get(file_url, headers={'Authorization': 'Bearer ' + credentials.token})
+            resp = requests.get(file_url, headers={'Authorization': 'Bearer ' + credentials['token']})
             with open(f'{output_dir}/{filename}', 'wb') as file:
                 file.write(resp.content)
             download_count += 1
