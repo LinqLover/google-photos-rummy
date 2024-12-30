@@ -62,10 +62,16 @@ def get_pictures(credentials, min_date, max_date):
                             headers={'Authorization': 'Bearer ' + credentials.token})
         new_pictures = resp.json()['mediaItems']
         for picture in new_pictures:
-            picture['date'] = dt.datetime.strptime(
-                picture['mediaMetadata']['creationTime'],
-                '%Y-%m-%dT%H:%M:%SZ'
-            )
+            try:
+                picture['date'] = dt.datetime.strptime(
+                    picture['mediaMetadata']['creationTime'],
+                    '%Y-%m-%dT%H:%M:%SZ'
+                )
+            except ValueError:
+                picture['date'] = dt.datetime.strptime(
+                    picture['mediaMetadata']['creationTime'],
+                    '%Y-%m-%dT%H:%M:%S.%fZ'
+                )
         pictures += new_pictures
         if min(picture['date'] for picture in pictures) < min_date:
             break
