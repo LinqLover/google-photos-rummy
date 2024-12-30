@@ -24,20 +24,20 @@ Just install & run the script, print out the photos, and reminisce together!
 
 ## Preparation of the Game
 
-1. Clone the repository:
+1. **Clone the repository:**
 
    ```sh
    git clone https://github.com/LinqLover/google-photos-rummy.git
    cd google-photos-rummy
    ```
 
-2. Install requirements (Python 3 required, tested with 3.9):
+2. **Install requirements (Python 3 required, tested with 3.9):**
 
    ```sh
    pip3 install -r requirements.txt
    ```
 
-3. Set up credentials for the [Google Photos API](https://developers.google.com/photos):
+3. **Set up credentials for the [Google Photos API](https://developers.google.com/photos):**
 
    1. Open the [Google Cloud Platform](https://console.cloud.google.com/).
    2. [Create](https://console.cloud.google.com/projectcreate) a new project (suggested name: `GPhotos Rummy`).
@@ -58,7 +58,7 @@ Just install & run the script, print out the photos, and reminisce together!
 	  3. In the confirmation window, download the credentials file by clicking "Download JSON".
 	  4. Save the file as `client_secret.json` into the cloned project folder.
 
-4. Randomly select & download your photos by executing the script:
+4. **Execute the script to randomly select & download your photos:**
 
    ```shell
    python3 google_photos_rummy.py
@@ -71,9 +71,13 @@ Just install & run the script, print out the photos, and reminisce together!
 
    Be patient for a few minutes (depending on the number of your photos), a random subset of your photos will be downloaded into the `photos` directory of the project folder.
 
-5. Print out the downloaded photos (recommended size: 4 images per page) and cut up the pages.
+5. **Print out the downloaded photos (recommended size: 4 images per page) and cut up the pages.**
 
-   **Tip:** Turn the papers over during cutting to avoid self-spoilering!
+   > [!TIP]
+   > If you use photo paper, you can also use the photos to arrange a nice photo wall after playing the game.
+
+   > [!TIP]
+   > Turn the papers over during cutting to avoid self-spoilering!
 
    For instance, on Windows, you can do this by selecting and right-clicking the downloaded files in the explorer, choosing "Print", and choosing an appropriate page layout on the right:
 
@@ -82,7 +86,7 @@ Just install & run the script, print out the photos, and reminisce together!
      <img src="https://user-images.githubusercontent.com/38782922/147888018-de8073a7-7b5b-41dd-aa67-3926d1b5ac14.png" width="45%" />
   </p>
 
-6. Mix the printed photos and put them face down in a pile.
+6. **Mix the printed photos and put them face down in a pile.**
 
 ## Play of the Game
 
