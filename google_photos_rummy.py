@@ -61,6 +61,15 @@ def get_pictures(credentials, min_date, max_date):
         resp = requests.get(url, params=params,
                             headers={'Authorization': 'Bearer ' + credentials.token})
         new_pictures = resp.json()['mediaItems']
+        new_pictures = [
+            picture for picture in new_pictures
+            # exclude videos
+            if picture['mimeType'].startswith('image')
+               # exclude special creations
+               and not any(
+                exclude in picture['filename']
+                for exclude in ['PANO', 'PHOTOSPHERE', 'POP_OUT', 'COLLAGE'])
+        ]
         for picture in new_pictures:
             try:
                 picture['date'] = dt.datetime.strptime(
