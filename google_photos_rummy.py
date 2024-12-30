@@ -88,6 +88,6 @@ if __name__ == "__main__":
     year = (dt.datetime.now() - dt.timedelta(days=30 * 9)).year
     year = int(input(f"Year ({year}): ") or year)
     sample_size = 50
-    sample_size = int(input(f"Sample Size ({sample_size}): ")) or sample_size
+    sample_size = int(input(f"Sample Size ({sample_size}): ") or sample_size)
 
     main(year, sample_size)
