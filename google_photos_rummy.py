@@ -21,12 +21,27 @@ def main(
     min_date = dt.datetime(year=year, month=1, day=1)
     max_date = dt.datetime(year=year + 1, month=1, day=1)
 
+    credentials = authenticate()
+
+    pictures = get_pictures(credentials, min_date, max_date)
+    print(f"Fetched {len(pictures)} candidates")
+
+    random_pictures = select_random_pictures(pictures, sample_size)
+    print(f"Selected {len(random_pictures)} random photos")
+
+    download_count = download_pictures(credentials, random_pictures, max_width, max_height, output_dir)
+    print(f"Downloaded {download_count} photos to {output_dir}!")
+
+
+def authenticate():
     flow = google_auth_oauthlib.flow.InstalledAppFlow.from_client_secrets_file(
         'client_secret.json',
         scopes=['https://www.googleapis.com/auth/photoslibrary.readonly'])
 
-    credentials = flow.run_console()
+    return flow.run_console()
 
+
+def get_pictures(credentials, min_date, max_date):
     url = 'https://photoslibrary.googleapis.com/v1/mediaItems'
     params = {
         'pageSize': 100
@@ -55,17 +70,20 @@ def main(
         if min(picture['date'] for picture in pictures) < min_date:
             break
 
-    pictures = [
+    return [
         picture for picture in pictures
         if min_date <= picture['date'] < max_date
     ]
-    print(f"Fetched {len(pictures)} candidates")
 
-    random_pictures = random.sample(pictures, sample_size)
 
+def select_random_pictures(pictures, sample_size):
+    return random.sample(pictures, min(sample_size, len(pictures)))
+
+
+def download_pictures(credentials, pictures, max_width, max_height, output_dir):
     Path(output_dir).mkdir(parents=True, exist_ok=True)
     download_count = 0
-    for picture in tqdm(random_pictures, desc="Downloading"):
+    for picture in tqdm(pictures, desc="Downloading"):
         url = f"https://photoslibrary.googleapis.com/v1/mediaItems/{picture['id']}"
         resp = requests.get(url, headers={'Authorization': 'Bearer ' + credentials.token})
         try:
@@ -78,8 +96,8 @@ def main(
         except Exception as ex:
             print("Failed to download", picture['id'], ex)
             print(resp.json())
+    return download_count
 
-    print(f"Downloaded {download_count} photos to {output_dir}!")
 
 if __name__ == "__main__":
     print("Google Photos Rummy")
