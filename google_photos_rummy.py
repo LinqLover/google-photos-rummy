@@ -81,10 +81,21 @@ def get_pictures(credentials, min_date, max_date):
         if min_date <= picture['date'] < max_date
     ]
 
-
 def select_random_pictures(pictures, sample_size):
-    return random.sample(pictures, min(sample_size, len(pictures)))
+    # return random.sample(pictures, min(sample_size, len(pictures)))
 
+    # advanced sampling: select pictures from each day with equal probability
+    if not pictures:
+        return []
+    date_counts = Counter(picture['date'].date() for picture in pictures)
+    return random.choices(
+        pictures,
+        k=min(sample_size, len(pictures)),
+        weights=[
+            1 / date_counts[picture['date'].date()]
+            for picture in pictures
+        ]
+    )
 
 def download_pictures(credentials, pictures, max_width, max_height, output_dir):
     Path(output_dir).mkdir(parents=True, exist_ok=True)
