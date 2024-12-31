@@ -71,7 +71,7 @@ Just install & run the script, print out the photos, and reminisce together!
 
    The recommended sample size is ~50, depending on the number of memories, players, and available time.
 
-   The script will ask you to perform a few simple steps for selecting galleries.
+   The script will ask you to perform a few simple steps to select your gallery/galleries.
    Do as instructed.
 
    Be patient for a few minutes (depending on the number of your photos), a random subset of your photos will be downloaded into the `photos` directory of the project folder.
@@ -80,13 +80,14 @@ Just install & run the script, print out the photos, and reminisce together!
 
    Recommended size: 4 images per page.
 
-   > [!TIP]
-   > If you use photo paper, you can also use the photos to arrange a nice photo wall after playing the game.
+<!-- WORKAROUND: unindented because of https://github.com/orgs/community/discussions/118296 -->
+> [!NOTE]
+> If you use photo paper, you can also use the photos to arrange a nice photo wall after playing the game.
 
-   > [!TIP]
-   > Turn the papers over during cutting to avoid self-spoilering!
+> [!TIP]  
+> Turn the papers over during cutting to avoid self-spoilering!
 
-   For instance, on Windows, you can do this by selecting and right-clicking the downloaded files in the explorer, choosing "Print", and choosing an appropriate page layout on the right:
+ - For instance, on Windows, you can do this by selecting and right-clicking the downloaded files in the explorer, choosing "Print", and choosing an appropriate page layout on the right:
 
    <p float="center">
      <img src="https://user-images.githubusercontent.com/38782922/147887994-e7182573-9eb4-4f37-acd7-2ee0779fbc85.png" width="45%" />
@@ -100,12 +101,12 @@ Just install & run the script, print out the photos, and reminisce together!
 If you have ever played [Rummikub](https://en.wikipedia.org/wiki/Rummikub) before, the following will sound familiar to you:
 Every player picks up a few photo cards (recommendation: 5 cards) initially.
 The players try in turn to lay out a group of at least three cards that must have a connecting element (e.g., a certain place, activity, or event).
-Whenever a card is laid out, the players try to remember where the photo was taken and what they did enjoy most on this day.
-Be prepared for discussing valid connecting elements during the game, and beware of not allowing for too generic categories!
+Whenever a card is laid out, the players try to remember where the photo was taken and what they enjoyed most on that day.
+Be prepared to discuss valid connecting elements during the game, and beware of not allowing for too generic categories!
 
 If the player in turn cannot lay out a group, this player picks up another card instead.
 After a player has laid out their first group, the game becomes even more interesting for this player:
-They can now modify the existing arrangements by appending cards to existing or rearranging them in new groups on the playfield, with the requirement of maintaining the following invariants:
+They can now modify the existing arrangements by appending cards to existing ones or rearranging them in new groups on the playfield, with the requirement of maintaining the following invariants:
 
 - Every card group consists of at least 3 and at most 5 (recommended) cards that have one connecting element in common.
 - The player must not pick up a card again that has been laid out in an earlier turn.
