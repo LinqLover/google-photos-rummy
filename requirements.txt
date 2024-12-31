@@ -1,3 +1,4 @@
+exifread
 google_auth_oauthlib
 requests
 tqdm

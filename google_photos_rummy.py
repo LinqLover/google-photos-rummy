@@ -2,14 +2,176 @@
 
 from collections import Counter
 import datetime as dt
+import exifread
+from functools import cached_property
 import google_auth_oauthlib.flow
 from pathlib import Path
 import random
 import requests
+import shutil
 from tqdm import tqdm
 
 
+class PictureRepository:
+    @staticmethod
+    def create():
+        raise NotImplementedError()
+
+    def get_pictures(self, min_date, max_date):
+        raise NotImplementedError()
+
+
+class Picture:
+    @property
+    def date(self):
+        raise NotImplementedError()
+
+    def download(self, max_width, max_height, output_dir):
+        raise NotImplementedError()
+
+
+class GooglePhotosRepository(PictureRepository):
+    @staticmethod
+    def create():
+        name = input("Name: ")
+        return GooglePhotosRepository(name)
+
+    def __init__(self, name):
+        self.name = name
+        self.credentials = None
+
+    def get_pictures(self, min_date, max_date):
+        # FIXME: requesting multiple accounts upfront is not working - new credentials appear to overwrite old ones
+        self.credentials = self.authenticate()
+
+        url = 'https://photoslibrary.googleapis.com/v1/mediaItems'
+        params = {
+            'pageSize': 100
+        }
+
+        pictures = []
+
+        page = 0
+        resp = None
+        print("Fetching photos...")
+        # Loop until we have all the photos
+        while not resp or 'nextPageToken' in resp.json():
+            page += 1
+            print("Page", page)
+            if resp:
+                params['pageToken'] = resp.json()['nextPageToken']
+            resp = requests.get(url, params=params,
+                                headers={'Authorization': 'Bearer ' + self.credentials.token})
+            media_items = resp.json()['mediaItems']
+            pictures += [
+                GooglePhoto(media_item, self)
+                for media_item in media_items
+                # exclude videos
+                if media_item['mimeType'].startswith('image')
+                # exclude special creations
+                and not any(
+                    exclude in media_item['filename']
+                    for exclude in ['PANO', 'PHOTOSPHERE', 'POP_OUT', 'COLLAGE'])
+            ]
+            if min(picture.date for picture in pictures) < min_date:
+                break
+
+        return [
+            picture
+            for picture in pictures
+            if min_date <= picture.date < max_date
+        ]
+
+    def authenticate(self):
+        print(f"Authenticating account {self.name}...")
+        flow = google_auth_oauthlib.flow.InstalledAppFlow.from_client_secrets_file(
+            'client_secret.json',
+            scopes=['https://www.googleapis.com/auth/photoslibrary.readonly'])
+
+        return flow.run_console()
+
+    def download_picture(self, media_item, max_width, max_height, output_dir):
+        Path(output_dir).mkdir(parents=True, exist_ok=True)
+        url = f"https://photoslibrary.googleapis.com/v1/mediaItems/{media_item['id']}"
+        resp = requests.get(url, headers={'Authorization': 'Bearer ' + self.credentials.token})
+        try:
+            filename = resp.json()['filename']
+            file_url = resp.json()['baseUrl'] + f'=w{max_width}-h{max_height}'
+            resp = requests.get(file_url, headers={'Authorization': 'Bearer ' + self.credentials.token})
+            with open(f'{output_dir}/{filename}', 'wb') as file:
+                file.write(resp.content)
+        except Exception as ex:
+            print("Failed to download", media_item['id'], ex)
+            print(resp.json())
+            return False
+        return True
+
+
+class GooglePhoto(Picture):
+    def __init__(self, media_item, repository):
+        self.media_item = media_item
+        self.repository = repository
+
+    @cached_property
+    def date(self):
+        creation_time = self.media_item['mediaMetadata']['creationTime']
+        try:
+            return dt.datetime.strptime(creation_time, '%Y-%m-%dT%H:%M:%SZ')
+        except ValueError:
+            return dt.datetime.strptime(creation_time, '%Y-%m-%dT%H:%M:%S.%fZ')
+
+    def download(self, max_width, max_height, output_dir):
+        return self.repository.download_picture(self.media_item, max_width, max_height, output_dir)
+
+
+class FileRepository(PictureRepository):
+    @staticmethod
+    def create():
+        path = input("Path: ")
+        if not path:
+            raise ValueError("Path is required")
+        return FileRepository(path)
+
+    def __init__(self, path):
+        self.path = Path(path)
+
+    def get_pictures(self, min_date, max_date):
+        pictures = [
+            FilePicture(file)
+            for ext in ['jpg', 'jpeg']
+            for file in self.path.glob(f'**/*.{ext}')
+        ]
+
+        return [
+            picture
+            for picture in pictures
+            if min_date <= picture.date < max_date
+        ]
+
+
+class FilePicture(Picture):
+    def __init__(self, path):
+        self.path = Path(path)
+
+    @cached_property
+    def date(self):
+        try:
+            with open(self.path.as_posix(), 'rb') as f:
+                exif = exifread.process_file(f)
+                return dt.datetime.strptime(str(exif['EXIF DateTimeOriginal']), '%Y:%m:%d %H:%M:%S')
+        except Exception as ex:
+            import pdb; pdb.set_trace()
+            print(f"Warning: Failed to read EXIF data for {self.path} ({ex}), using file modification time")
+            return dt.datetime.fromtimestamp(self.path.stat().st_mtime)
+
+    def download(self, max_width, max_height, output_dir):
+        Path(output_dir).mkdir(parents=True, exist_ok=True)
+        shutil.copy2(self.path, f'{output_dir}')
+        return True
+
+
 def main(
+    repositories,
     year,
     sample_size,
     max_width=4032,
@@ -23,82 +185,23 @@ def main(
     min_date = dt.datetime(year=year, month=1, day=1)
     max_date = dt.datetime(year=year + 1, month=1, day=1)
 
-    pictures = []
-    number_of_accounts = 0
-    # FIXME: requesting multiple accounts upfront is not working - new credentials appear to overwrite old ones
-    while True:
-        print(f"Google Photos Account{'' if not number_of_accounts else f' {len(number_of_accounts) + 1}'}:")
-        credentials = authenticate()
-        pictures += [
-            {**picture, 'credentials': {'token': credentials.token}}
-            for picture in get_pictures(credentials, min_date, max_date)
-        ]
-        if input("Add another account? (y/n): ") != 'y':
-            break
-        number_of_accounts += 1
+    pictures = [
+        picture
+        for repository in tqdm(repositories, desc="Finding photos")
+        for picture in repository.get_pictures(min_date, max_date)
+    ]
     print(f"Fetched {len(pictures)} candidates")
 
     random_pictures = select_random_pictures(pictures, sample_size)
     print(f"Selected {len(random_pictures)} random photos")
 
-    download_count = download_pictures(random_pictures, max_width, max_height, output_dir)
+    download_count = len([
+        picture
+        for picture in tqdm(random_pictures, desc="Downloading photos")
+        if picture.download(max_width, max_height, output_dir)
+    ])
     print(f"Downloaded {download_count} photos to {output_dir}!")
 
-def authenticate():
-    flow = google_auth_oauthlib.flow.InstalledAppFlow.from_client_secrets_file(
-        'client_secret.json',
-        scopes=['https://www.googleapis.com/auth/photoslibrary.readonly'])
-
-    return flow.run_console()
-
-def get_pictures(credentials, min_date, max_date):
-    url = 'https://photoslibrary.googleapis.com/v1/mediaItems'
-    params = {
-        'pageSize': 100
-    }
-
-    pictures = []
-
-    page = 0
-    resp = None
-    print("Fetching photos...")
-    # Loop until we have all the photos
-    while not resp or 'nextPageToken' in resp.json():
-        page += 1
-        print('Page', page)
-        if resp:
-            params['pageToken'] = resp.json()['nextPageToken']
-        resp = requests.get(url, params=params,
-                            headers={'Authorization': 'Bearer ' + credentials.token})
-        new_pictures = resp.json()['mediaItems']
-        new_pictures = [
-            picture for picture in new_pictures
-            # exclude videos
-            if picture['mimeType'].startswith('image')
-               # exclude special creations
-               and not any(
-                exclude in picture['filename']
-                for exclude in ['PANO', 'PHOTOSPHERE', 'POP_OUT', 'COLLAGE'])
-        ]
-        for picture in new_pictures:
-            try:
-                picture['date'] = dt.datetime.strptime(
-                    picture['mediaMetadata']['creationTime'],
-                    '%Y-%m-%dT%H:%M:%SZ'
-                )
-            except ValueError:
-                picture['date'] = dt.datetime.strptime(
-                    picture['mediaMetadata']['creationTime'],
-                    '%Y-%m-%dT%H:%M:%S.%fZ'
-                )
-        pictures += new_pictures
-        if min(picture['date'] for picture in pictures) < min_date:
-            break
-
-    return [
-        picture for picture in pictures
-        if min_date <= picture['date'] < max_date
-    ]
 
 def select_random_pictures(pictures, sample_size):
     # return random.sample(pictures, min(sample_size, len(pictures)))
@@ -116,25 +219,6 @@ def select_random_pictures(pictures, sample_size):
         ]
     )
 
-def download_pictures(pictures, max_width, max_height, output_dir):
-    Path(output_dir).mkdir(parents=True, exist_ok=True)
-    download_count = 0
-    for picture in tqdm(pictures, desc="Downloading"):
-        url = f"https://photoslibrary.googleapis.com/v1/mediaItems/{picture['id']}"
-        credentials = picture['credentials']
-        resp = requests.get(url, headers={'Authorization': 'Bearer ' + credentials['token']})
-        try:
-            filename = resp.json()['filename']
-            file_url = resp.json()['baseUrl'] + f'=w{max_width}-h{max_height}'
-            resp = requests.get(file_url, headers={'Authorization': 'Bearer ' + credentials['token']})
-            with open(f'{output_dir}/{filename}', 'wb') as file:
-                file.write(resp.content)
-            download_count += 1
-        except Exception as ex:
-            print("Failed to download", picture['id'], ex)
-            print(resp.json())
-    return download_count
-
 
 if __name__ == "__main__":
     print("Google Photos Rummy")
@@ -145,4 +229,19 @@ if __name__ == "__main__":
     sample_size = 50
     sample_size = int(input(f"Sample Size ({sample_size}): ") or sample_size)
 
-    main(year, sample_size)
+    repository_types = {
+        'google_photos': GooglePhotosRepository,
+        'files': FileRepository,
+    }
+    repositories = []
+    while True:
+        repository_type = input(f"Repository{'' if not repositories else f' {len(repositories) + 1}'} ({'/'.join(repository_types.keys())}): ")
+        if not repository_type:
+            break
+        repository = repository_types[repository_type].create()
+        repositories.append(repository)
+        if input("Add another repository? (y/n): ") != 'y':
+            break
+    print()
+
+    main(repositories, year, sample_size)

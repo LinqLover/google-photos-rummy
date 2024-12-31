@@ -6,12 +6,12 @@ duration: 30 - 90 min
 
 # Google Photos Rummy
 
-> Create your own card game for an individual end-of-the-year review based on your Google Photos gallery.
+> Create your own card game for an individual end-of-the-year review based on your Google Photos gallery (and others).
 
 ## Goal of the Game
 
 Every year you take hundreds or even thousands of beautiful and funny photos that are linked to wonderful memories.
-While you can preserve all of these photos in your personal [Google Photos gallery](https://photos.google.com/) for (almost) ever, keeping these memories actually alive is harder if you do not talk about them with your friends and family.
+While you can preserve all of these photos in your personal [Google Photos gallery](https://photos.google.com/) and others for (almost) ever, keeping these memories actually alive is harder if you do not talk about them with your friends and family.
 
 On New Year's Eve, you usually sit together with (some of) your friends or family members, but the temptation is great to waste your time by drinking too much or watching a political end-of-the-year review on TV only (or if you live in Germany, most likely [Dinner for One](https://www.youtube.com/watch?v=UmsKkebN2O4)).
 
@@ -19,8 +19,13 @@ Why not create your very own end-of-the-year review instead and revive the memor
 And because just watching photos in a group very quickly gets boring, why not make it a fun party game?
 *Google Photos Rummy* (not by Google) is a small card game inspired by [Rummy](https://en.wikipedia.org/wiki/Rummy) and [Rummikub](https://en.wikipedia.org/wiki/Rummikub) that allows you to do right this!
 
-The script from this repository will scrape all photos from your Google Photos Gallery for one year, select a random subset from them, and download it.
+The script from this repository will scrape all photos from your Google Photos Gallery and other places for one year, select a random subset from them, and download it.
 Just install & run the script, print out the photos, and reminisce together!
+
+## Supported Gallery Types
+
+- [Google Photos](https://photos.google.com/)
+- Local files
 
 ## Preparation of the Game
 
@@ -37,7 +42,7 @@ Just install & run the script, print out the photos, and reminisce together!
    pip3 install -r requirements.txt
    ```
 
-3. **Set up credentials for the [Google Photos API](https://developers.google.com/photos):**
+3. If you want to use Google Photos: **Set up credentials for the [Google Photos API](https://developers.google.com/photos):**
 
    1. Open the [Google Cloud Platform](https://console.cloud.google.com/).
    2. [Create](https://console.cloud.google.com/projectcreate) a new project (suggested name: `GPhotos Rummy`).
@@ -66,12 +71,14 @@ Just install & run the script, print out the photos, and reminisce together!
 
    The recommended sample size is ~50, depending on the number of memories, players, and available time.
 
-   The script will ask you to perform a few simple steps for authorization.
+   The script will ask you to perform a few simple steps for selecting galleries.
    Do as instructed.
 
    Be patient for a few minutes (depending on the number of your photos), a random subset of your photos will be downloaded into the `photos` directory of the project folder.
 
-5. **Print out the downloaded photos (recommended size: 4 images per page) and cut up the pages.**
+5. **Print out the downloaded photos and cut up the pages.**
+
+   Recommended size: 4 images per page.
 
    > [!TIP]
    > If you use photo paper, you can also use the photos to arrange a nice photo wall after playing the game.
