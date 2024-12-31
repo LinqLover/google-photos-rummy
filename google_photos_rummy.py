@@ -228,6 +228,8 @@ if __name__ == "__main__":
     year = int(input(f"Year ({year}): ") or year)
     sample_size = 50
     sample_size = int(input(f"Sample Size ({sample_size}): ") or sample_size)
+    output_dir = 'photos'
+    output_dir = input(f"Output Directory ({output_dir}): ") or output_dir
 
     repository_types = {
         'google_photos': GooglePhotosRepository,
@@ -244,4 +246,4 @@ if __name__ == "__main__":
             break
     print()
 
-    main(repositories, year, sample_size)
+    main(repositories, year, sample_size, output_dir=output_dir)
