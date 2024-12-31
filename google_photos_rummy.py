@@ -206,15 +206,21 @@ def main(
 def select_random_pictures(pictures, sample_size):
     # return random.sample(pictures, min(sample_size, len(pictures)))
 
-    # advanced sampling: select pictures from each day with equal probability
+    # advanced sampling: avoid selecting multiple photos from the same day
+    # TODO: consider explicit scene duplication (e.g., day + hour)
+    uniform_weight = 0.8  # weight for uniform sampling (fair representation of holidays)
+    daily_weight = 0.2  # weight for daily sampling (promote diversity/everyday photos)
     if not pictures:
         return []
-    date_counts = Counter(picture['date'].date() for picture in pictures)
+    date_counts = Counter(picture.date.date() for picture in pictures)
     return random.choices(
         pictures,
         k=min(sample_size, len(pictures)),
         weights=[
-            1 / date_counts[picture['date'].date()]
+            (
+                uniform_weight
+                + daily_weight / date_counts[picture.date.date()]
+            )
             for picture in pictures
         ]
     )
